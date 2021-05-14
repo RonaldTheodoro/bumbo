@@ -23,3 +23,13 @@ def hello(request, response, name):
 def sum(request, response, x, y):
     total = int(x) + int(y)
     response.text = f'{x} + {y} = {total}'
+
+
+@app.route('/book')
+class BooksResource:
+
+    def get(self, request, response):
+        response.text = 'Books Page'
+
+    def post(self, request, response):
+        response.text = 'Endpoint to create a book'
