@@ -1,7 +1,9 @@
 import inspect
 
 import parse
+import requests
 import webob
+import wsgiadapter
 
 
 class API:
@@ -27,7 +29,7 @@ class API:
 
     def default_response(self, response):
         response.status_code = 404
-        response.text = 'Not found'
+        response.text = 'Not found.'
 
     def find_handler(self, request_path):
         for path, handler in self.routes.items():
@@ -52,3 +54,8 @@ class API:
             self.default_response(response)
 
         return response
+
+    def test_session(self, base_url='http://testserver'):
+        session = requests.Session()
+        session.mount(prefix=base_url, adapter=wsgiadapter.WSGIAdapter(self))
+        return session
