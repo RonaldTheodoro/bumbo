@@ -75,3 +75,26 @@ def test_class_based_handler_not_allowed_method(api, client):
 
     with pytest.raises(AttributeError):
         client.get("http://testserver/book")
+
+
+def test_alternative_route(api, client):
+    response_text = 'Alternative way to add a route'
+
+    def index(request, response):
+        response.text = response_text
+
+    api.add_route('/alternative', index)
+    assert client.get('http://testserver/alternative').text == response_text
+
+
+def test_template(api, client):
+    @api.route('/html')
+    def html_handler(request, response):
+        context = {'title': 'Awesome Framework', 'name': 'Bumbo'}
+        response.body = api.template('home.html', context=context).encode()
+
+    response = client.get('http://testserver/html')
+
+    assert 'text/html' in response.headers['Content-Type']
+    assert 'Awesome Framework' in response.text
+    assert 'Bumbo' in response.text
